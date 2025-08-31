@@ -1,0 +1,21 @@
+---
+import "@/styles/global.css";
+import Fonts from "@/components/Fonts.astro";
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <Fonts />
+        <slot name="head" />
+    </head>
+    <body class="h-dvh bg-stone-200 font-sans text-stone-900 dark:bg-stone-900 dark:text-stone-200">
+        <div class="mx-auto flex min-h-full max-w-3xl flex-col bg-stone-50 dark:bg-stone-800">
+            <slot />
+        </div>
+    </body>
+</html>

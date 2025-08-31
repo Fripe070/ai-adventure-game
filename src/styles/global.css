@@ -1,0 +1,30 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+    --font-sans: var(--font-roboto-condensed), sans-serif;
+
+    --color-adventure-50: var(--color-amber-50);
+    --color-adventure-100: var(--color-amber-100);
+    --color-adventure-200: var(--color-amber-200);
+    --color-adventure-300: var(--color-amber-300);
+    --color-adventure-400: var(--color-amber-400);
+    --color-adventure-500: var(--color-amber-500);
+    --color-adventure-600: var(--color-amber-600);
+    --color-adventure-700: var(--color-amber-700);
+    --color-adventure-800: var(--color-amber-800);
+    --color-adventure-900: var(--color-amber-900);
+    --color-adventure-950: var(--color-amber-950);
+
+    --color-quest-50: var(--color-rose-50);
+    --color-quest-100: var(--color-rose-100);
+    --color-quest-200: var(--color-rose-200);
+    --color-quest-300: var(--color-rose-300);
+    --color-quest-400: var(--color-rose-400);
+    --color-quest-500: var(--color-rose-500);
+    --color-quest-600: var(--color-rose-600);
+    --color-quest-700: var(--color-rose-700);
+    --color-quest-800: var(--color-rose-800);
+    --color-quest-900: var(--color-rose-900);
+    --color-quest-950: var(--color-rose-950);
+}

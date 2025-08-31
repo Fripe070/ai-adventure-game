@@ -1,0 +1,108 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Content from "@/components/react/Content";
+
+const { aiAdventureDb } = Astro.locals.runtime.env;
+const node_id = Number(Astro.params.node_id);
+
+const storyNode: {
+    story_id: number;
+    parent_node_id: number | null;
+    choice_label: string | null;
+    story_content: string | null;
+} | null = await aiAdventureDb
+    .prepare(
+        "SELECT story_id, parent_node_id, choice_label, story_content FROM nodes WHERE node_id = ?",
+    )
+    .bind(node_id)
+    .first();
+if (!storyNode) {
+    return Astro.rewrite("/404");
+}
+const { story_id, parent_node_id, choice_label, story_content } = storyNode;
+if (parent_node_id !== null && choice_label === null) {
+    throw new Error(
+        `Invalid story node ${node_id}. Parent node is defined but choice label is null.`,
+    );
+}
+
+const { title: story_title = "Unknown Story" }: { title?: string } = !story_id
+    ? {}
+    : ((await aiAdventureDb
+          .prepare("SELECT title FROM stories WHERE story_id = ?")
+          .bind(story_id)
+          .first()) ?? {});
+
+const { results: nextNodes }: { results: { node_id: number; choice_label: string }[] } =
+    await aiAdventureDb
+        .prepare("SELECT node_id, choice_label FROM nodes WHERE parent_node_id = ?")
+        .bind(node_id)
+        .all();
+
+if (!story_content) {
+    Astro.response.headers.set("Cache-Control", "no-store");
+}
+---
+
+<Layout>
+    <header class="border-b border-stone-200 p-2 py-5 dark:border-stone-700">
+        <div
+            class="flex flex-col items-center text-center sm:grid sm:grid-cols-[1fr_auto_1fr] sm:text-left"
+        >
+            <span class="hidden sm:flex sm:flex-row"> </span>
+            {
+                choice_label && (
+                    <h1 class="px-2 text-lg text-stone-900 sm:px-5 sm:text-xl dark:text-stone-100">
+                        &OpenCurlyQuote;{choice_label}&CloseCurlyQuote;
+                    </h1>
+                )
+            }
+            <span class="mt-2 flex flex-row justify-center sm:mt-0 sm:justify-start">
+                {
+                    !story_content && (
+                        <span class="relative h-4 w-32 sm:w-24">
+                            <p class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-sm font-semibold whitespace-nowrap text-stone-600 not-motion-reduce:animate-[wiggle_2s_ease-in-out_infinite] sm:text-base dark:text-stone-400">
+                                Unexplored!
+                            </p>
+                        </span>
+                    )
+                }
+            </span>
+        </div>
+        <h2 class="text-center text-lg text-stone-700 dark:text-stone-400">
+            {story_title}
+        </h2>
+    </header>
+    <main class="flex grow flex-col">
+        {
+            (() => {
+                const commonProps = {
+                    current_node: node_id,
+                    parent_node: parent_node_id,
+                    content: story_content,
+                    choices: nextNodes.map((n) => ({
+                        node_id: n.node_id,
+                        label: n.choice_label,
+                    })),
+                };
+                return story_content ? (
+                    <Content {...commonProps} />
+                ) : (
+                    <Content {...commonProps} client:load />
+                );
+            })()
+        }
+    </main>
+</Layout>
+
+<style>
+    @keyframes wiggle {
+        0%,
+        100% {
+            transform: rotate(-3deg);
+        }
+        50% {
+            transform: rotate(3deg);
+        }
+    }
+</style>

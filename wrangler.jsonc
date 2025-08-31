@@ -1,0 +1,28 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "ai-adventure",
+    "main": "./dist/_worker.js/index.js",
+    "compatibility_date": "2025-08-28",
+    "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+    "assets": {
+        "binding": "ASSETS",
+        "directory": "./dist",
+    },
+    "observability": {
+        "enabled": true,
+    },
+    "d1_databases": [
+        {
+            "binding": "aiAdventureDb",
+            "database_name": "ai-adventure-prod",
+            "database_id": "8f26df54-8055-4120-ae3a-9d6dd147bf10",
+        },
+    ],
+    "triggers": {
+        "crons": ["0 0 * * *"],
+    },
+}

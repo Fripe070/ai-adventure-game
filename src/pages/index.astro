@@ -1,0 +1,41 @@
+---
+import Layout from "@/layouts/Layout.astro";
+
+const { aiAdventureDb } = Astro.locals.runtime.env;
+interface StoryWithRoot {
+    story_id: number;
+    title: string;
+    root_node_id: number;
+}
+
+// prettier-ignore
+const stories: { results: StoryWithRoot[] } = await aiAdventureDb
+    .prepare(`
+        SELECT s.story_id, s.title, n.node_id AS root_node_id
+        FROM stories s
+        JOIN nodes n ON n.story_id = s.story_id
+        WHERE n.parent_node_id IS NULL
+    `).all();
+---
+
+<Layout>
+    <h1 class="p-2 text-center text-2xl font-bold text-stone-900 dark:text-stone-100">
+        Choose Your Adventure
+    </h1>
+    <nav>
+        <ol class="flex w-full flex-col gap-1">
+            {
+                stories.results.reverse().map((story) => (
+                    <li class="hover:bg-adventure-50 rounded-lg border border-stone-200 bg-white shadow-sm transition hover:shadow-md dark:border-stone-700 dark:bg-stone-800 dark:hover:bg-stone-700">
+                        <a
+                            class="hover:text-adventure-700 hover:ring-adventure-400 focus:text-adventure-700 focus:ring-adventure-400 dark:hover:text-adventure-400 dark:focus:text-adventure-400 dark:hover:ring-adventure-500 dark:focus:ring-adventure-500 block rounded-lg px-6 py-4 text-lg font-medium transition focus:ring-2 focus:outline-none dark:text-stone-200"
+                            href={`/s/${story.root_node_id}`}
+                        >
+                            {story.title}
+                        </a>
+                    </li>
+                ))
+            }
+        </ol>
+    </nav>
+</Layout>
