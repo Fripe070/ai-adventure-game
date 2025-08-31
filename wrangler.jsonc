@@ -4,7 +4,7 @@
  */
 {
     "$schema": "node_modules/wrangler/config-schema.json",
-    "name": "ai-adventure",
+    "name": "ai-adventure-game",
     "main": "./dist/_worker.js/index.js",
     "compatibility_date": "2025-08-28",
     "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
